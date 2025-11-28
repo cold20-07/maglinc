@@ -131,7 +131,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-midnight mb-1">Email</h3>
-                    <p className="text-gray-600">contact@maglinc.com</p>
+                    <p className="text-gray-600">contact@mevoq.com</p>
                   </div>
                 </div>
 
@@ -174,7 +174,7 @@ const Contact = () => {
               </div>
 
               <div className="bg-gradient-to-br from-neon-teal/10 to-signal-green/10 rounded-2xl p-8">
-                <h3 className="text-xl font-bold text-midnight mb-4">Why Choose Maglinc?</h3>
+                <h3 className="text-xl font-bold text-midnight mb-4">Why Choose Mevoq?</h3>
                 <ul className="space-y-3">
                   <li className="flex items-start">
                     <span className="text-signal-green mr-2">✓</span>
@@ -190,7 +190,7 @@ const Contact = () => {
                   </li>
                   <li className="flex items-start">
                     <span className="text-signal-green mr-2">✓</span>
-                    <span className="text-gray-700">98.5% client satisfaction</span>
+                    <span className="text-gray-700">25+ years of experience</span>
                   </li>
                 </ul>
               </div>

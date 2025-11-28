@@ -26,9 +26,9 @@ const About = () => {
       {/* Hero */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-teal-50">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold text-midnight mb-6">About Maglinc</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold text-midnight mb-6">About Mevoq</h1>
           <p className="text-xl text-gray-600">
-            We're a team of ex-regulators, scientists, and industry veterans dedicated to accelerating pharmaceutical innovation through expert regulatory consulting.
+            We've sat on both sides of the table. As former regulators and scientists, we use our inside experience to clear the path for your innovation.
           </p>
         </div>
       </section>
@@ -40,10 +40,10 @@ const About = () => {
             <div>
               <h2 className="text-3xl font-bold text-midnight mb-6">Our Mission</h2>
               <p className="text-lg text-gray-600 mb-4">
-                At Maglinc, we believe that life-saving therapies shouldn't be delayed by regulatory complexity. Our mission is to bridge the gap between pharmaceutical innovation and regulatory approval, ensuring that breakthrough treatments reach patients faster.
+                At Mevoq, we believe that life-saving therapies shouldn't be delayed by regulatory complexity. Our mission is to bridge the gap between pharmaceutical innovation and regulatory approval, ensuring that breakthrough treatments reach patients faster.
               </p>
               <p className="text-lg text-gray-600">
-                With decades of combined experience in FDA review, quality systems, and global regulatory strategy, we provide the expertise and guidance that transforms regulatory challenges into competitive advantages.
+                With decades of combined experience in REGULATORY review, quality systems, and global regulatory strategy, we provide the expertise and guidance that transforms regulatory challenges into competitive advantages.
               </p>
             </div>
             <div className="bg-gradient-to-br from-neon-teal/10 to-signal-green/10 rounded-2xl p-8">
@@ -51,11 +51,7 @@ const About = () => {
               <ul className="space-y-3">
                 <li className="flex items-start">
                   <span className="text-signal-green mr-2">✓</span>
-                  <span className="text-gray-700">Former FDA reviewers on staff</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-signal-green mr-2">✓</span>
-                  <span className="text-gray-700">200+ successful drug approvals</span>
+                  <span className="text-gray-700">50+ successful drug approvals</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-signal-green mr-2">✓</span>

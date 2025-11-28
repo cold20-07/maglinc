@@ -166,8 +166,8 @@ html {
 
 /* Selection */
 ::selection {
-  background: var(--signal-green);
-  color: var(--midnight);
+  background: #2db87c;
+  color: white;
 }
 
 /* Focus States */

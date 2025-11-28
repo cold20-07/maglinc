@@ -1,4 +1,4 @@
-# Maglinc Pharmaceutical Consulting Website
+# Mevoq Pharmaceutical Consulting Website
 
 A modern, SEO-optimized website for pharmaceutical regulatory consulting services built with React and Supabase.
 

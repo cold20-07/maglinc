@@ -1,10 +1,48 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   CheckCircle2, ArrowRight, Clock, TrendingUp, Users, Globe
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getStats, getTestimonials, getServices } from '@/lib/api';
+
+// Counter animation component
+const AnimatedCounter = ({ value, duration = 2000 }) => {
+  const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const counterRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          let startTime;
+          const animate = (currentTime) => {
+            if (!startTime) startTime = currentTime;
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            
+            setCount(Math.floor(progress * value));
+            
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            }
+          };
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (counterRef.current) {
+      observer.observe(counterRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [value, duration, hasAnimated]);
+
+  return <span ref={counterRef}>{count}</span>;
+};
 
 const Home = () => {
   const navigate = useNavigate();
@@ -84,12 +122,15 @@ const Home = () => {
             {stats && [
               { label: 'Successful Submissions', value: stats.successful_submissions, suffix: '+', icon: CheckCircle2 },
               { label: 'Project Weeks Saved', value: stats.project_weeks_saved, suffix: '+', icon: Clock },
-              { label: 'Client Satisfaction', value: stats.client_satisfaction, suffix: '%', icon: TrendingUp },
-              { label: 'Countries Served', value: stats.countries_served, suffix: '', icon: Globe }
+              { label: 'Years of Experience', value: stats.years_experience, suffix: '+', icon: TrendingUp },
+              { label: 'Countries Served', value: stats.countries_served, suffix: '+', icon: Globe }
             ].map((stat, idx) => (
               <div key={idx} className="text-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
                 <stat.icon size={32} className="mx-auto mb-4 text-signal-green" />
-                <p className="text-5xl font-bold text-signal-green mb-2">{stat.value}{stat.suffix}</p>
+                <p className="text-5xl font-bold text-signal-green mb-2">
+                  <AnimatedCounter value={stat.value} />
+                  {stat.suffix}
+                </p>
                 <p className="text-gray-300">{stat.label}</p>
               </div>
             ))}

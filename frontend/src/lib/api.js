@@ -3,10 +3,10 @@ import { supabase } from './supabase';
 // Stats
 export const getStats = () => {
   return {
-    successful_submissions: 870,
-    project_weeks_saved: 4000,
-    client_satisfaction: 98.5,
-    countries_served: 47
+    successful_submissions: 50,
+    project_weeks_saved: 500,
+    years_experience: 25,
+    countries_served: 15
   };
 };
 
@@ -26,7 +26,7 @@ export const getTestimonials = async () => {
         name: "Dr. Sarah Chen",
         role: "VP Regulatory Affairs",
         company: "BioGenix Therapeutics",
-        content: "Maglinc cut our FDA submission timeline by 40%. Their expertise in regulatory strategy is unmatched. We launched 3 months ahead of schedule.",
+        content: "Mevoq cut our FDA submission timeline by 40%. Their expertise in regulatory strategy is unmatched. We launched 3 months ahead of schedule.",
         rating: 5
       },
       {
@@ -42,7 +42,7 @@ export const getTestimonials = async () => {
         name: "Dr. Amelia Rodriguez",
         role: "Director of Quality",
         company: "MedLife Innovations",
-        content: "Working with Maglinc felt like having an extension of our own team. Their documentation expertise is exceptional.",
+        content: "Working with Mevoq felt like having an extension of our own team. Their documentation expertise is exceptional.",
         rating: 5
       }
     ];
@@ -71,7 +71,10 @@ export const getServices = async () => {
           "Regulatory pathway assessment",
           "Meeting preparation (FDA, EMA, PMDA)",
           "Risk mitigation strategies",
-          "Global harmonization planning"
+          "Global harmonization planning",
+          "Labeling & artwork",
+          "Technical file preparations",
+          "Clinical evaluation reports"
         ],
         case_study_snippet: "Helped biotech company achieve FDA breakthrough designation"
       },
@@ -83,8 +86,7 @@ export const getServices = async () => {
         features: [
           "IND/NDA/BLA preparation",
           "CTD/eCTD compilation",
-          "Investigator brochures",
-          "Pediatric study plans"
+          "DMFs, ASMFs, CEPs, CADIFAs, etc."
         ],
         case_study_snippet: "Created complete NDA package in 4 months vs. industry average of 8"
       },
@@ -99,7 +101,7 @@ export const getServices = async () => {
           "Inspection readiness",
           "CAPA effectiveness review"
         ],
-        case_study_snippet: "Zero FDA 483 observations in last 15 client inspections"
+        case_study_snippet: "Successful GMP inspections by regulatory authorities for our clients"
       },
       {
         id: '4',
@@ -112,7 +114,7 @@ export const getServices = async () => {
           "Scientific publications",
           "Patient-facing materials"
         ],
-        case_study_snippet: "Drafted responses that resolved FDA complete response letter"
+        case_study_snippet: "Successfully addressed the queries raised by ethics committee"
       },
       {
         id: '5',
@@ -120,12 +122,12 @@ export const getServices = async () => {
         description: "Proactive identification and mitigation of regulatory and quality risks.",
         icon: "alert-triangle",
         features: [
-          "Risk assessments (ICH Q9)",
+          "Risk assessments",
           "Gap analysis",
           "Deviation investigation",
           "Change control evaluation"
         ],
-        case_study_snippet: "Prevented costly product recall through early risk identification"
+        case_study_snippet: "Successful vendor approval through nitrosamine impurities compliance"
       },
       {
         id: '6',
@@ -136,7 +138,10 @@ export const getServices = async () => {
           "Document management",
           "Submission tracking",
           "Regulatory intelligence",
-          "Process optimization"
+          "Process optimization",
+          "US authorized agent",
+          "US FDA administrative activities",
+          "Accreditation certification applications"
         ],
         case_study_snippet: "Reduced administrative burden by 60% for mid-size pharma"
       }
@@ -159,27 +164,27 @@ export const getTeam = async () => {
     return [
       {
         id: '1',
-        name: "Dr. Jennifer Martinez",
+        name: "Dr. Ashok Shah",
         role: "Founder & Chief Regulatory Officer",
         bio: "Former FDA reviewer with 15+ years in pharmaceutical regulation. Led 200+ successful drug approvals.",
         expertise: ["FDA Strategy", "CMC Review", "IND/NDA Submissions"],
-        avatar_url: "https://images.unsplash.com/photo-1758691461916-dc7894eb8f94?w=400"
+        avatar_url: null
       },
       {
         id: '2',
-        name: "Robert Chen, PhD",
+        name: "Mr. Manish Purohit",
         role: "VP Quality & Compliance",
         bio: "Quality systems expert with Big Pharma and biotech experience. Specializes in remediation and inspection readiness.",
         expertise: ["Quality Systems", "GMP Compliance", "Inspection Management"],
-        avatar_url: "https://images.unsplash.com/photo-1758691463198-dc663b8a64e4?w=400"
+        avatar_url: null
       },
       {
         id: '3',
-        name: "Dr. Priya Sharma",
+        name: "Mr. Shailesh Shah",
         role: "Director of Regulatory Writing",
         bio: "Medical writer and regulatory affairs specialist. Authored regulatory documents for 50+ global submissions.",
         expertise: ["Medical Writing", "Regulatory Documentation", "Global Submissions"],
-        avatar_url: "https://images.unsplash.com/photo-1758691462119-792279713969?w=400"
+        avatar_url: null
       }
     ];
   }

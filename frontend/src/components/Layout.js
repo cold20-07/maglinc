@@ -32,7 +32,7 @@ const Layout = ({ children }) => {
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center">
                 <span className="text-white font-bold text-xl">M</span>
               </div>
-              <span className="text-2xl font-bold text-midnight">Maglinc</span>
+              <span className="text-2xl font-bold text-midnight">Mevoq</span>
             </Link>
             
             <div className="hidden md:flex items-center space-x-8">
@@ -106,9 +106,9 @@ const Layout = ({ children }) => {
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center">
                   <span className="text-white font-bold text-xl">M</span>
                 </div>
-                <span className="text-xl font-bold">Maglinc</span>
+                <span className="text-xl font-bold">Mevoq</span>
               </div>
-              <p className="text-gray-400 text-sm">Accelerating pharmaceutical innovation through expert regulatory consulting.</p>
+              <p className="text-gray-400 text-sm">Turning Regulatory Hurdles into Competitive Advantages.</p>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Services</h4>
@@ -135,7 +135,7 @@ const Layout = ({ children }) => {
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2025 Maglinc Pharmaceutical Consulting. All rights reserved.</p>
+            <p>&copy; 2025 Mevoq Pharmaceutical Consulting. All rights reserved.</p>
           </div>
         </div>
       </footer>

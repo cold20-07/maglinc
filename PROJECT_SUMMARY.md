@@ -1,4 +1,4 @@
-# Maglinc Website - Project Summary
+# Mevoq Website - Project Summary
 
 ## What We Built
 
@@ -56,7 +56,7 @@ A complete, production-ready pharmaceutical consulting website with:
 ## File Structure
 
 ```
-maglinc/
+mevoq/
 ├── frontend/
 │   ├── src/
 │   │   ├── pages/          # All page components
