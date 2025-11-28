@@ -126,11 +126,40 @@ REACT_APP_SUPABASE_ANON_KEY=eyJhbGc...
 
 ---
 
+## Supabase Storage Setup
+
+Before deploying, set up the storage bucket for blog images:
+
+1. **Create Storage Bucket**
+   - Go to Supabase Dashboard → Storage
+   - Click "New bucket"
+   - Name: `blog-images`
+   - Enable "Public bucket"
+   - Click "Create bucket"
+
+2. **Set Storage Policies**
+   - Click on `blog-images` bucket → Policies
+   - Add these policies:
+     - **Public Read:** `bucket_id = 'blog-images'` (SELECT)
+     - **Auth Upload:** `bucket_id = 'blog-images' AND auth.role() = 'authenticated'` (INSERT)
+     - **Auth Update:** `bucket_id = 'blog-images' AND auth.role() = 'authenticated'` (UPDATE)
+     - **Auth Delete:** `bucket_id = 'blog-images' AND auth.role() = 'authenticated'` (DELETE)
+
+3. **Configure Limits** (Optional)
+   - Settings → Storage
+   - Max file size: 5MB
+   - Allowed types: `image/jpeg, image/png, image/gif, image/webp`
+
+See `backend/storage_setup.md` for detailed instructions.
+
+---
+
 ## Post-Deployment Checklist
 
 ### Security
 - [ ] Add authentication to `/admin` route
 - [ ] Update Supabase RLS policies for production
+- [ ] Set up storage bucket for blog images
 - [ ] Enable HTTPS (usually automatic)
 - [ ] Set up CORS in Supabase if needed
 

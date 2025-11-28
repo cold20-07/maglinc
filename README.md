@@ -8,6 +8,8 @@ A modern, SEO-optimized website for pharmaceutical regulatory consulting service
 - 📱 Mobile-first approach
 - 🔍 SEO-optimized multi-page structure
 - 📝 Blog system with admin panel
+- 🖼️ Image upload for blog posts
+- 🛠️ Services management (add/edit/delete)
 - 📧 Contact form with lead capture
 - 🗄️ Supabase backend (no server needed!)
 - ⚡ Fast and lightweight
@@ -46,7 +48,13 @@ frontend/
 backend/
 ├── supabase_schema.sql       # Initial database schema
 ├── blog_migration.sql        # Blog tables migration
-└── update_rls_policies.sql   # Row Level Security policies
+├── update_rls_policies.sql   # Row Level Security policies
+└── storage_setup.md          # Storage bucket setup guide
+
+docs/
+├── ADMIN_PANEL_GUIDE.md      # Complete admin panel documentation
+├── DEPLOYMENT.md             # Deployment instructions
+└── SETUP_GUIDE.md            # Initial setup guide
 ```
 
 ## Setup Instructions
@@ -59,6 +67,10 @@ backend/
    - `backend/supabase_schema.sql` (creates all tables)
    - `backend/blog_migration.sql` (adds blog tables if not already created)
    - `backend/update_rls_policies.sql` (sets up security policies)
+4. Set up storage bucket for images:
+   - Follow instructions in `backend/storage_setup.md`
+   - Create `blog-images` bucket with public access
+   - Configure storage policies
 
 ### 2. Environment Variables
 
@@ -99,13 +111,31 @@ The app will be available at http://localhost:3000
 
 ## Admin Panel
 
-Access the admin panel at `/admin` to:
-- Create, edit, and delete blog posts
-- View contact form submissions
-- Manage published/draft status
-- Add categories and tags
+Access the admin panel at `/admin` - **now protected with authentication!**
 
-**Note:** Currently has no authentication. Add authentication before deploying to production!
+### Features
+- **🔒 Secure Login:** Email/password authentication via Supabase Auth
+- **Blog Posts:** Create, edit, and delete blog posts with rich content
+- **Image Upload:** Upload images directly or use URLs for blog featured images
+- **Services Management:** Add, edit, and delete services displayed on your site
+- **Contact Submissions:** View all contact form submissions
+- **Draft/Publish:** Control post visibility with draft and publish status
+- **Categories & Tags:** Organize blog posts with categories and tags
+- **Logout:** Secure logout functionality
+
+### Quick Start
+1. **Create admin user** in Supabase Dashboard (see `AUTH_QUICK_START.md`)
+2. Navigate to `/login` in your browser
+3. Enter your credentials and sign in
+4. Access `/admin` to manage content
+5. Click **Logout** when done
+
+**📖 Documentation:**
+- **Quick Setup:** `AUTH_QUICK_START.md` - 5-minute authentication setup
+- **Full Auth Guide:** `AUTH_SETUP_GUIDE.md` - Complete authentication documentation
+- **Admin Guide:** `ADMIN_PANEL_GUIDE.md` - Complete admin panel instructions
+
+**✅ Security:** Admin panel is protected. Only authenticated users can access.
 
 ## Database Tables
 
@@ -209,12 +239,28 @@ Edit `frontend/src/App.css` to change the color scheme:
 - Optimized build with Create React App
 - Direct Supabase connection (no API middleman)
 
-## Support
+## Troubleshooting
 
-For issues or questions:
-1. Check Supabase dashboard for database issues
-2. Check browser console for frontend errors
-3. Verify environment variables are set correctly
+Having issues? Check these resources:
+
+1. **TROUBLESHOOTING.md** - Common issues and solutions
+2. **backend/STORAGE_SETUP_STEPS.md** - Storage setup help
+3. **Browser Console** - Press F12 to see errors
+4. **Supabase Dashboard** - Check logs and database
+
+### Quick Fixes
+
+**Image upload error?** Run this SQL in Supabase:
+```sql
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('blog-images', 'blog-images', true)
+ON CONFLICT (id) DO NOTHING;
+
+CREATE POLICY "Anyone can upload" ON storage.objects 
+FOR INSERT WITH CHECK (bucket_id = 'blog-images');
+```
+
+See `backend/create_storage_bucket.sql` for complete setup.
 
 ## License
 

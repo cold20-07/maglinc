@@ -2,6 +2,7 @@ import '@/App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import Layout from '@/components/Layout';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import Home from '@/pages/Home';
 import About from '@/pages/About';
 import Services from '@/pages/Services';
@@ -9,6 +10,7 @@ import ServiceDetail from '@/pages/ServiceDetail';
 import Blog from '@/pages/Blog';
 import BlogPost from '@/pages/BlogPost';
 import Contact from '@/pages/Contact';
+import Login from '@/pages/Login';
 import Admin from '@/pages/Admin';
 
 function App() {
@@ -17,8 +19,18 @@ function App() {
       <BrowserRouter>
         <Toaster position="top-right" />
         <Routes>
-          {/* Admin route without layout */}
-          <Route path="/admin" element={<Admin />} />
+          {/* Login route */}
+          <Route path="/login" element={<Login />} />
+          
+          {/* Protected admin route */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
+            } 
+          />
           
           {/* Public routes with layout */}
           <Route path="/" element={<Layout><Home /></Layout>} />

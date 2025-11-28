@@ -1,15 +1,22 @@
-import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Edit, Trash2, Eye, EyeOff, Upload, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 
 const Admin = () => {
+  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [blogPosts, setBlogPosts] = useState([]);
   const [contacts, setContacts] = useState([]);
+  const [services, setServices] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [showServiceForm, setShowServiceForm] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
+  const [editingService, setEditingService] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -21,6 +28,13 @@ const Admin = () => {
     category: 'general',
     tags: [],
     published: false
+  });
+  const [serviceFormData, setServiceFormData] = useState({
+    title: '',
+    description: '',
+    icon: 'map-pin',
+    features: [],
+    case_study_snippet: ''
   });
 
   useEffect(() => {
@@ -39,10 +53,45 @@ const Admin = () => {
         .select('*')
         .order('timestamp', { ascending: false });
       
+      const { data: services } = await supabase
+        .from('services')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
       setBlogPosts(posts || []);
       setContacts(contacts || []);
+      setServices(services || []);
     } catch (e) {
       console.error('Error fetching data:', e);
+    }
+  };
+
+  const handleImageUpload = async (file) => {
+    if (!file) return null;
+    
+    try {
+      setUploadingImage(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('blog-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('blog-images')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Failed to upload image');
+      return null;
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -147,17 +196,123 @@ const Admin = () => {
       .replace(/(^-|-$)/g, '');
   };
 
+  // Service Management Functions
+  const handleServiceSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const serviceData = {
+        ...serviceFormData,
+        features: typeof serviceFormData.features === 'string' 
+          ? serviceFormData.features.split('\n').filter(f => f.trim()) 
+          : serviceFormData.features
+      };
+
+      if (editingService) {
+        const { error } = await supabase
+          .from('services')
+          .update(serviceData)
+          .eq('id', editingService.id);
+        
+        if (error) throw error;
+        toast.success('Service updated successfully!');
+      } else {
+        const newService = {
+          ...serviceData,
+          id: crypto.randomUUID(),
+          created_at: new Date().toISOString()
+        };
+        
+        const { error } = await supabase
+          .from('services')
+          .insert([newService]);
+        
+        if (error) throw error;
+        toast.success('Service created successfully!');
+      }
+      
+      setShowServiceForm(false);
+      setEditingService(null);
+      resetServiceForm();
+      fetchData();
+    } catch (error) {
+      toast.error('Error saving service');
+      console.error(error);
+    }
+  };
+
+  const handleEditService = (service) => {
+    setEditingService(service);
+    setServiceFormData({
+      title: service.title,
+      description: service.description,
+      icon: service.icon,
+      features: Array.isArray(service.features) ? service.features.join('\n') : service.features,
+      case_study_snippet: service.case_study_snippet || ''
+    });
+    setShowServiceForm(true);
+  };
+
+  const handleDeleteService = async (serviceId) => {
+    if (!window.confirm('Are you sure you want to delete this service?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('services')
+        .delete()
+        .eq('id', serviceId);
+      
+      if (error) throw error;
+      toast.success('Service deleted successfully!');
+      fetchData();
+    } catch (error) {
+      toast.error('Error deleting service');
+    }
+  };
+
+  const resetServiceForm = () => {
+    setServiceFormData({
+      title: '',
+      description: '',
+      icon: 'map-pin',
+      features: [],
+      case_study_snippet: ''
+    });
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast.success('Logged out successfully');
+      navigate('/login');
+    } catch (error) {
+      toast.error('Error logging out');
+      console.error('Logout error:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-midnight">Admin Panel</h1>
-          <p className="text-gray-600 mt-2">Manage your website content</p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-bold text-midnight">Admin Panel</h1>
+            <p className="text-gray-600 mt-2">Manage your website content</p>
+          </div>
+          <Button 
+            onClick={handleLogout}
+            variant="outline"
+            className="flex items-center space-x-2"
+          >
+            <LogOut size={20} />
+            <span>Logout</span>
+          </Button>
         </div>
 
         <Tabs defaultValue="blog" className="space-y-6">
           <TabsList>
             <TabsTrigger value="blog">Blog Posts</TabsTrigger>
+            <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="contacts">Contacts</TabsTrigger>
           </TabsList>
 
@@ -258,7 +413,7 @@ const Admin = () => {
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-3 gap-6">
+                  <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
                       <select
@@ -273,16 +428,6 @@ const Admin = () => {
                         <option value="strategy">Strategy</option>
                       </select>
                     </div>
-                    
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Featured Image URL</label>
-                      <input
-                        type="url"
-                        value={formData.featured_image}
-                        onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none"
-                      />
-                    </div>
 
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">Tags (comma-separated)</label>
@@ -293,6 +438,62 @@ const Admin = () => {
                         className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none"
                         placeholder="FDA, Regulatory, Compliance"
                       />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Featured Image</label>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-4">
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={async (e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const url = await handleImageUpload(file);
+                              if (url) {
+                                setFormData({ ...formData, featured_image: url });
+                              }
+                            }
+                          }}
+                          className="hidden"
+                        />
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          disabled={uploadingImage}
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <Upload size={16} className="mr-2" />
+                          {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                        </Button>
+                        <span className="text-sm text-gray-500">or enter URL below</span>
+                      </div>
+                      <input
+                        type="url"
+                        value={formData.featured_image}
+                        onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none"
+                        placeholder="https://example.com/image.jpg"
+                      />
+                      {formData.featured_image && (
+                        <div className="relative inline-block">
+                          <img 
+                            src={formData.featured_image} 
+                            alt="Preview" 
+                            className="h-32 rounded-lg object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, featured_image: '' })}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -380,6 +581,163 @@ const Admin = () => {
                               size="sm"
                               variant="outline"
                               onClick={() => handleDelete(post.id)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Services Tab */}
+          <TabsContent value="services" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-midnight">Services</h2>
+              <Button 
+                onClick={() => {
+                  setShowServiceForm(!showServiceForm);
+                  setEditingService(null);
+                  resetServiceForm();
+                }}
+                className="bg-midnight hover:bg-midnight/90"
+              >
+                <Plus size={20} className="mr-2" />
+                {showServiceForm ? 'Cancel' : 'New Service'}
+              </Button>
+            </div>
+
+            {showServiceForm && (
+              <div className="bg-white rounded-2xl p-8 shadow-lg">
+                <h3 className="text-xl font-bold text-midnight mb-6">
+                  {editingService ? 'Edit Service' : 'Create New Service'}
+                </h3>
+                
+                <form onSubmit={handleServiceSubmit} className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Title *</label>
+                      <input
+                        type="text"
+                        value={serviceFormData.title}
+                        onChange={(e) => setServiceFormData({ ...serviceFormData, title: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Icon *</label>
+                      <select
+                        value={serviceFormData.icon}
+                        onChange={(e) => setServiceFormData({ ...serviceFormData, icon: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none"
+                        required
+                      >
+                        <option value="map-pin">Map Pin</option>
+                        <option value="file-text">File Text</option>
+                        <option value="shield-check">Shield Check</option>
+                        <option value="pen-tool">Pen Tool</option>
+                        <option value="alert-triangle">Alert Triangle</option>
+                        <option value="folder">Folder</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
+                    <textarea
+                      value={serviceFormData.description}
+                      onChange={(e) => setServiceFormData({ ...serviceFormData, description: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none h-24 resize-none"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Features (one per line) *</label>
+                    <textarea
+                      value={typeof serviceFormData.features === 'string' ? serviceFormData.features : serviceFormData.features.join('\n')}
+                      onChange={(e) => setServiceFormData({ ...serviceFormData, features: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none h-32 resize-none"
+                      placeholder="Feature 1&#10;Feature 2&#10;Feature 3"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Case Study Snippet</label>
+                    <textarea
+                      value={serviceFormData.case_study_snippet}
+                      onChange={(e) => setServiceFormData({ ...serviceFormData, case_study_snippet: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none h-24 resize-none"
+                    />
+                  </div>
+
+                  <div className="flex space-x-4">
+                    <Button type="submit" className="bg-midnight hover:bg-midnight/90">
+                      {editingService ? 'Update Service' : 'Create Service'}
+                    </Button>
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      onClick={() => {
+                        setShowServiceForm(false);
+                        setEditingService(null);
+                        resetServiceForm();
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Title</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Icon</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Features</th>
+                      <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {services.map((service) => (
+                      <tr key={service.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-midnight">{service.title}</div>
+                          <div className="text-sm text-gray-500">{service.description.substring(0, 60)}...</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="px-3 py-1 bg-neon-teal/10 text-neon-teal rounded-full text-xs font-semibold">
+                            {service.icon}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-gray-700">
+                          {Array.isArray(service.features) ? service.features.length : 0} features
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex justify-end space-x-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleEditService(service)}
+                            >
+                              <Edit size={16} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDeleteService(service.id)}
                               className="text-red-600 hover:text-red-700"
                             >
                               <Trash2 size={16} />

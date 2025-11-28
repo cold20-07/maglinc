@@ -133,3 +133,14 @@ FOR SELECT USING (published = true);
 -- Authenticated users can manage all posts
 CREATE POLICY "Enable all access for authenticated users" ON blog_posts 
 FOR ALL USING (auth.role() = 'authenticated');
+
+-- Storage bucket for blog images
+-- Run this in Supabase Dashboard > Storage
+-- Create a bucket named 'blog-images' with public access
+-- Then run these policies:
+
+-- Storage policies for blog-images bucket
+-- CREATE POLICY "Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'blog-images');
+-- CREATE POLICY "Authenticated users can upload" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'blog-images' AND auth.role() = 'authenticated');
+-- CREATE POLICY "Authenticated users can update" ON storage.objects FOR UPDATE USING (bucket_id = 'blog-images' AND auth.role() = 'authenticated');
+-- CREATE POLICY "Authenticated users can delete" ON storage.objects FOR DELETE USING (bucket_id = 'blog-images' AND auth.role() = 'authenticated');
