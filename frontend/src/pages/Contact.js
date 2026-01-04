@@ -1,199 +1,194 @@
-import { useState } from 'react';
-import { MapPin, Phone, Mail, Clock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { submitContact } from '@/lib/api';
+import { MapPin, Phone, Mail, Clock, CheckCircle } from 'lucide-react';
+import ContactForm from '@/components/ContactForm';
+import useScrollAnimation from '@/hooks/useScrollAnimation';
 
+/**
+ * Contact Page - Pfizer-Inspired Design
+ * 
+ * Sections:
+ * 1. Hero - Simple centered headline
+ * 2. Contact Form + Info - Two-column layout
+ */
 const Contact = () => {
-  const [contactForm, setContactForm] = useState({ 
-    name: '', 
-    email: '', 
-    company: '', 
-    message: '', 
-    phone: '' 
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [heroRef] = useScrollAnimation({ threshold: 0.1 });
+  const [contentRef] = useScrollAnimation({ threshold: 0.1 });
 
-  const handleContactSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      await submitContact({ 
-        ...contactForm, 
-        lead_type: 'strategy_call' 
-      });
-      toast.success('Thank you! We\'ll be in touch within 24 hours.');
-      setContactForm({ name: '', email: '', company: '', message: '', phone: '' });
-    } catch (error) {
-      toast.error('Oops! Please try again.');
-    } finally {
-      setIsSubmitting(false);
+  // Contact info data
+  const contactInfo = [
+    {
+      icon: Mail,
+      title: 'Email',
+      content: 'contact@mevoq.com',
+      href: 'mailto:contact@mevoq.com'
+    },
+    {
+      icon: Phone,
+      title: 'Phone',
+      content: '+1 (555) 123-4567',
+      href: 'tel:+15551234567'
+    },
+    {
+      icon: MapPin,
+      title: 'Office',
+      content: '123 Regulatory Way\nRockville, MD 20850\nUnited States',
+      href: null
     }
-  };
+  ];
+
+  // Why choose us points
+  const whyChooseUs = [
+    'Former FDA reviewers on staff',
+    '200+ successful drug approvals',
+    '30% faster approval timelines',
+    '25+ years of experience'
+  ];
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-teal-50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold text-midnight mb-6">Get in Touch</h1>
-          <p className="text-xl text-gray-600">
-            Ready to accelerate your regulatory approval? Let's discuss how we can help.
+      {/* ============================================
+          HERO SECTION
+          ============================================ */}
+      <section 
+        className="bg-white pt-28 sm:pt-32 md:pt-36 pb-12 sm:pb-16"
+        aria-labelledby="contact-heading"
+      >
+        <div 
+          ref={heroRef}
+          className="container mx-auto px-4 sm:px-6 lg:px-8 text-center fade-in-section" 
+          style={{ maxWidth: '800px' }}
+        >
+          <h1 
+            id="contact-heading"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#001F3F] mb-4 sm:mb-6"
+          >
+            Get in Touch
+          </h1>
+          <p className="text-lg sm:text-xl text-gray-600 leading-relaxed">
+            Ready to accelerate your regulatory approval? Let's discuss how we can help 
+            transform your regulatory challenges into competitive advantages.
           </p>
         </div>
       </section>
 
-      {/* Contact Form & Info */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12">
+      {/* ============================================
+          CONTACT FORM & INFO
+          ============================================ */}
+      <section 
+        className="bg-[#F9FAFB] py-12 sm:py-16 md:py-20"
+        aria-label="Contact form and information"
+      >
+        <div 
+          ref={contentRef}
+          className="container mx-auto px-4 sm:px-6 lg:px-8 fade-in-section" 
+          style={{ maxWidth: '1200px' }}
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Contact Form */}
             <div>
-              <h2 className="text-3xl font-bold text-midnight mb-6">Send Us a Message</h2>
-              <form onSubmit={handleContactSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Name *</label>
-                    <input
-                      type="text"
-                      value={contactForm.name}
-                      onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none"
-                      placeholder="Your name"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
-                    <input
-                      type="email"
-                      value={contactForm.email}
-                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none"
-                      placeholder="your@email.com"
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Company</label>
-                    <input
-                      type="text"
-                      value={contactForm.company}
-                      onChange={(e) => setContactForm({ ...contactForm, company: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none"
-                      placeholder="Your company"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
-                    <input
-                      type="tel"
-                      value={contactForm.phone}
-                      onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none"
-                      placeholder="+1 (555) 123-4567"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">How can we help?</label>
-                  <textarea
-                    value={contactForm.message}
-                    onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none h-32 resize-none"
-                    placeholder="Tell us about your project..."
-                  />
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  disabled={isSubmitting}
-                  className="w-full bg-midnight hover:bg-midnight/90 text-white font-bold py-4 text-lg rounded-full"
-                >
-                  {isSubmitting ? 'Sending...' : 'Request Strategy Call'}
-                </Button>
-              </form>
+              <ContactForm 
+                title="Send Us a Message"
+                submitButtonText="Request Strategy Call"
+                leadType="strategy_call"
+              />
             </div>
 
-            {/* Contact Info */}
+            {/* Contact Information */}
             <div>
-              <h2 className="text-3xl font-bold text-midnight mb-6">Contact Information</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#001F3F] mb-6">
+                Contact Information
+              </h2>
               
-              <div className="space-y-6 mb-12">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-neon-teal to-signal-green flex items-center justify-center flex-shrink-0">
-                    <Mail size={24} className="text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-midnight mb-1">Email</h3>
-                    <p className="text-gray-600">contact@mevoq.com</p>
-                  </div>
-                </div>
+              {/* Contact Info Cards */}
+              <div className="space-y-4 mb-8">
+                {contactInfo.map((item, idx) => {
+                  const Icon = item.icon;
+                  const ContentWrapper = item.href ? 'a' : 'div';
+                  const wrapperProps = item.href ? { href: item.href } : {};
+                  
+                  return (
+                    <div 
+                      key={idx}
+                      className="bg-white rounded-xl p-5 sm:p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-lg bg-[#0052CC] flex items-center justify-center flex-shrink-0">
+                          <Icon size={22} className="text-white" aria-hidden="true" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-[#001F3F] mb-1">
+                            {item.title}
+                          </h3>
+                          <ContentWrapper 
+                            {...wrapperProps}
+                            className={`text-gray-600 whitespace-pre-line ${item.href ? 'hover:text-[#0052CC] transition-colors' : ''}`}
+                          >
+                            {item.content}
+                          </ContentWrapper>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-neon-teal to-signal-green flex items-center justify-center flex-shrink-0">
-                    <Phone size={24} className="text-white" />
+              {/* Business Hours */}
+              <div className="bg-white rounded-xl p-5 sm:p-6 shadow-md border border-gray-100 mb-8">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-[#0052CC] flex items-center justify-center flex-shrink-0">
+                    <Clock size={22} className="text-white" aria-hidden="true" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-midnight mb-1">Phone</h3>
-                    <p className="text-gray-600">+1 (555) 123-4567</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-neon-teal to-signal-green flex items-center justify-center flex-shrink-0">
-                    <MapPin size={24} className="text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-midnight mb-1">Office</h3>
-                    <p className="text-gray-600">
-                      123 Regulatory Way<br />
-                      Rockville, MD 20850<br />
-                      United States
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-neon-teal to-signal-green flex items-center justify-center flex-shrink-0">
-                    <Clock size={24} className="text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-midnight mb-1">Business Hours</h3>
-                    <p className="text-gray-600">
-                      Monday - Friday: 9:00 AM - 6:00 PM EST<br />
-                      Saturday - Sunday: Closed
-                    </p>
+                    <h3 className="font-semibold text-[#001F3F] mb-2">
+                      Business Hours
+                    </h3>
+                    <div className="text-gray-600 space-y-1">
+                      <p><span className="font-medium">Monday - Friday:</span> 9:00 AM - 6:00 PM EST</p>
+                      <p><span className="font-medium">Saturday - Sunday:</span> Closed</p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-neon-teal/10 to-signal-green/10 rounded-2xl p-8">
-                <h3 className="text-xl font-bold text-midnight mb-4">Why Choose Mevoq?</h3>
-                <ul className="space-y-3">
-                  <li className="flex items-start">
-                    <span className="text-signal-green mr-2">✓</span>
-                    <span className="text-gray-700">Former FDA reviewers on staff</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-signal-green mr-2">✓</span>
-                    <span className="text-gray-700">200+ successful drug approvals</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-signal-green mr-2">✓</span>
-                    <span className="text-gray-700">30% faster approval timelines</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-signal-green mr-2">✓</span>
-                    <span className="text-gray-700">25+ years of experience</span>
-                  </li>
+              {/* Why Choose Mevoq */}
+              <div className="bg-[#E3F2FD] rounded-xl p-6 sm:p-8 border border-[#BBDEFB]">
+                <h3 className="text-xl font-bold text-[#001F3F] mb-4">
+                  Why Choose Mevoq?
+                </h3>
+                <ul className="space-y-3" aria-label="Benefits of choosing Mevoq">
+                  {whyChooseUs.map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <CheckCircle 
+                        size={20} 
+                        className="text-[#4CAF50] flex-shrink-0 mt-0.5" 
+                        aria-hidden="true"
+                      />
+                      <span className="text-gray-700">{item}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================
+          MAP SECTION (Optional placeholder)
+          ============================================ */}
+      <section className="bg-white py-12 sm:py-16">
+        <div 
+          className="container mx-auto px-4 sm:px-6 lg:px-8" 
+          style={{ maxWidth: '1200px' }}
+        >
+          <div className="bg-[#E3F2FD] rounded-2xl h-64 sm:h-80 flex items-center justify-center">
+            <div className="text-center">
+              <MapPin size={48} className="text-[#0052CC] mx-auto mb-4" aria-hidden="true" />
+              <p className="text-[#0052CC] font-medium">
+                Interactive map coming soon
+              </p>
+              <p className="text-gray-600 text-sm mt-1">
+                123 Regulatory Way, Rockville, MD 20850
+              </p>
             </div>
           </div>
         </div>

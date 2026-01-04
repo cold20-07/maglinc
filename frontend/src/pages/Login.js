@@ -34,14 +34,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-midnight via-midnight to-gray-900 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
+        <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-neon-teal to-signal-green rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-primary-teal rounded-full flex items-center justify-center mx-auto mb-4">
               <Lock size={32} className="text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-midnight mb-2">Admin Login</h1>
+            <h1 className="text-3xl font-bold text-primary-navy mb-2">Admin Login</h1>
             <p className="text-gray-600">Sign in to access the admin panel</p>
           </div>
 
@@ -56,7 +56,7 @@ const Login = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none"
+                  className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-teal focus:outline-none transition-colors"
                   placeholder="admin@example.com"
                   required
                 />
@@ -73,7 +73,7 @@ const Login = () => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-300 focus:border-neon-teal focus:outline-none"
+                  className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-gray-300 focus:border-primary-teal focus:outline-none transition-colors"
                   placeholder="••••••••"
                   required
                 />
@@ -83,7 +83,8 @@ const Login = () => {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-midnight hover:bg-midnight/90 text-white py-3 text-lg"
+              className="w-full py-3 text-lg"
+              size="lg"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
@@ -94,7 +95,7 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="mt-6 text-center text-sm text-gray-400">
+        <div className="mt-6 text-center text-sm text-gray-500">
           <p>Protected by Supabase Authentication</p>
         </div>
       </div>

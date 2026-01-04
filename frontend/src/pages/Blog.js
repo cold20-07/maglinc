@@ -1,13 +1,26 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Calendar, User, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { FileText } from 'lucide-react';
 import { getBlogPosts } from '@/lib/api';
+import BlogCard from '@/components/BlogCard';
+import useScrollAnimation from '@/hooks/useScrollAnimation';
 
+/**
+ * Blog Page - Pfizer-Inspired Design
+ * 
+ * Features:
+ * - Clean hero section
+ * - Category filter with primary blue active state
+ * - Blog card grid
+ * - Pagination
+ */
 const Blog = () => {
-  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 9;
+  
+  const [heroRef] = useScrollAnimation({ threshold: 0.1 });
+  const [gridRef] = useScrollAnimation({ threshold: 0.1 });
 
   useEffect(() => {
     fetchPosts();
@@ -22,41 +35,78 @@ const Blog = () => {
     }
   };
 
-  const categories = ['all', ...new Set(posts.map(post => post.category))];
+  // Get unique categories
+  const categories = ['all', ...new Set(posts.map(post => post.category).filter(Boolean))];
+  
+  // Filter posts by category
   const filteredPosts = selectedCategory === 'all' 
     ? posts 
     : posts.filter(post => post.category === selectedCategory);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  // Pagination
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <div className="min-h-screen">
-      {/* Hero */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-teal-50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold text-midnight mb-6">Insights & Resources</h1>
-          <p className="text-xl text-gray-600">
+    <div className="min-h-screen bg-white">
+      {/* ============================================
+          HERO SECTION
+          ============================================ */}
+      <section 
+        className="bg-white pt-28 sm:pt-32 md:pt-36 pb-10 sm:pb-12"
+        aria-labelledby="blog-heading"
+      >
+        <div 
+          ref={heroRef}
+          className="container mx-auto px-4 sm:px-6 lg:px-8 text-center fade-in-section"
+          style={{ maxWidth: '800px' }}
+        >
+          <h1 
+            id="blog-heading"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#001F3F] mb-4 sm:mb-6"
+          >
+            Insights & Resources
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed">
             Expert perspectives on pharmaceutical regulatory strategy, compliance, and industry trends
           </p>
         </div>
       </section>
 
-      {/* Category Filter */}
-      <section className="py-8 px-4 sm:px-6 lg:px-8 bg-white border-b">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-wrap gap-3 justify-center">
+      {/* ============================================
+          CATEGORY FILTER
+          ============================================ */}
+      <section 
+        className="bg-[#F9FAFB] py-6 sm:py-8 border-y border-gray-200"
+        aria-label="Filter by category"
+      >
+        <div 
+          className="container mx-auto px-4 sm:px-6 lg:px-8"
+          style={{ maxWidth: '1200px' }}
+        >
+          <div className="flex flex-wrap gap-2 sm:gap-3 justify-center" role="tablist">
             {categories.map((category) => (
               <button
                 key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-2 rounded-full font-medium transition-all ${
+                onClick={() => handleCategoryChange(category)}
+                role="tab"
+                aria-selected={selectedCategory === category}
+                className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-medium transition-all duration-200 text-sm sm:text-base min-h-[44px] ${
                   selectedCategory === category
-                    ? 'bg-midnight text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-[#0052CC] text-white shadow-md'
+                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
                 }`}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -66,62 +116,118 @@ const Blog = () => {
         </div>
       </section>
 
-      {/* Blog Posts Grid */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
+      {/* ============================================
+          BLOG POSTS GRID
+          ============================================ */}
+      <section 
+        className="bg-white py-12 sm:py-16 md:py-20"
+        aria-label="Blog posts"
+      >
+        <div 
+          ref={gridRef}
+          className="container mx-auto px-4 sm:px-6 lg:px-8 fade-in-section"
+          style={{ maxWidth: '1200px' }}
+        >
           {filteredPosts.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-xl text-gray-600">No blog posts yet. Check back soon!</p>
+            /* Empty State */
+            <div className="text-center py-12 sm:py-20">
+              <div className="max-w-md mx-auto">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-[#E3F2FD] rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                  <FileText className="w-10 h-10 sm:w-12 sm:h-12 text-[#0052CC]" aria-hidden="true" />
+                </div>
+                <h3 className="text-xl sm:text-2xl font-semibold text-[#001F3F] mb-2">
+                  No posts yet
+                </h3>
+                <p className="text-base sm:text-lg text-gray-600">
+                  Check back soon for expert insights and resources!
+                </p>
+              </div>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredPosts.map((post) => (
-                <article
-                  key={post.id}
-                  className="group bg-white rounded-2xl overflow-hidden border-2 border-gray-200 hover:border-neon-teal hover:shadow-xl transition-all cursor-pointer"
-                  onClick={() => navigate(`/blog/${post.slug}`)}
+            <>
+              {/* Posts Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12 stagger-children">
+                {currentPosts.map((post) => (
+                  <BlogCard key={post.id} post={post} />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <nav 
+                  className="flex justify-center items-center gap-2 mt-8 sm:mt-12 flex-wrap"
+                  aria-label="Blog pagination"
                 >
-                  {post.featured_image && (
-                    <div className="aspect-video overflow-hidden">
-                      <img 
-                        src={post.featured_image} 
-                        alt={post.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                  )}
-                  
-                  <div className="p-6">
-                    <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
-                      <span className="inline-block px-3 py-1 bg-signal-green/10 text-signal-green rounded-full text-xs font-semibold">
-                        {post.category}
-                      </span>
-                      <div className="flex items-center space-x-1">
-                        <Calendar size={14} />
-                        <span>{formatDate(post.published_at)}</span>
-                      </div>
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-midnight mb-3 group-hover:text-neon-teal transition-colors">
-                      {post.title}
-                    </h3>
-                    
-                    <p className="text-gray-600 mb-4 line-clamp-3">{post.excerpt}</p>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <User size={14} />
-                        <span>{post.author}</span>
-                      </div>
-                      
-                      <Button variant="link" className="text-neon-teal p-0 group-hover:translate-x-2 transition-transform">
-                        Read More <ArrowRight size={16} className="ml-1" />
-                      </Button>
-                    </div>
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base min-h-[44px] ${
+                      currentPage === 1
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                    }`}
+                    aria-label="Previous page"
+                  >
+                    Previous
+                  </button>
+
+                  <div className="flex gap-2">
+                    {[...Array(totalPages)].map((_, index) => {
+                      const pageNumber = index + 1;
+                      // Show first, last, current, and adjacent pages
+                      if (
+                        pageNumber === 1 ||
+                        pageNumber === totalPages ||
+                        (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                      ) {
+                        return (
+                          <button
+                            key={pageNumber}
+                            onClick={() => handlePageChange(pageNumber)}
+                            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                              currentPage === pageNumber
+                                ? 'bg-[#0052CC] text-white shadow-md'
+                                : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                            }`}
+                            aria-label={`Page ${pageNumber}`}
+                            aria-current={currentPage === pageNumber ? 'page' : undefined}
+                          >
+                            {pageNumber}
+                          </button>
+                        );
+                      } else if (
+                        pageNumber === currentPage - 2 ||
+                        pageNumber === currentPage + 2
+                      ) {
+                        return (
+                          <span 
+                            key={pageNumber} 
+                            className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-gray-400"
+                            aria-hidden="true"
+                          >
+                            ...
+                          </span>
+                        );
+                      }
+                      return null;
+                    })}
                   </div>
-                </article>
-              ))}
-            </div>
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base min-h-[44px] ${
+                      currentPage === totalPages
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                    }`}
+                    aria-label="Next page"
+                  >
+                    Next
+                  </button>
+                </nav>
+              )}
+            </>
           )}
         </div>
       </section>

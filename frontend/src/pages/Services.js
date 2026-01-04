@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   MapPin, FileText, ShieldCheck, PenTool, AlertTriangle, Folder,
-  CheckCircle2, ArrowRight
+  ArrowRight, Phone, Search, Map, Target
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ServiceCard from '@/components/ServiceCard';
+import CTASection from '@/components/CTASection';
 import { getServices } from '@/lib/api';
+import useScrollAnimation from '@/hooks/useScrollAnimation';
 
+// Icon mapping for services
 const iconMap = {
   'map-pin': MapPin,
   'file-text': FileText,
@@ -16,9 +20,21 @@ const iconMap = {
   'folder': Folder
 };
 
+/**
+ * Services Page - Pfizer-Inspired Design
+ * 
+ * Sections:
+ * 1. Hero - Simple centered headline
+ * 2. Services Grid - All services
+ * 3. Process - How we work (4 steps)
+ * 4. CTA - Final call to action
+ */
 const Services = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
+  const [heroRef] = useScrollAnimation({ threshold: 0.1 });
+  const [servicesRef] = useScrollAnimation({ threshold: 0.1 });
+  const [processRef] = useScrollAnimation({ threshold: 0.1 });
 
   useEffect(() => {
     fetchServices();
@@ -33,48 +49,184 @@ const Services = () => {
     }
   };
 
+  // Process steps data
+  const processSteps = [
+    { 
+      step: '01', 
+      title: 'Initial Consultation', 
+      desc: 'We discuss your goals, challenges, and regulatory requirements in a no-obligation call.',
+      icon: Phone
+    },
+    { 
+      step: '02', 
+      title: 'Deep-Dive Analysis', 
+      desc: 'Our team conducts a thorough assessment of your situation and identifies key opportunities.',
+      icon: Search
+    },
+    { 
+      step: '03', 
+      title: 'Strategic Roadmap', 
+      desc: 'Receive a detailed, actionable plan with clear timelines and milestones.',
+      icon: Map
+    },
+    { 
+      step: '04', 
+      title: 'Execution & Support', 
+      desc: 'We work alongside you, providing ongoing guidance until regulatory approval.',
+      icon: Target
+    }
+  ];
+
   return (
     <div className="min-h-screen">
-      {/* Hero */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-teal-50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold text-midnight mb-6">Our Services</h1>
-          <p className="text-xl text-gray-600">
-            Comprehensive regulatory solutions tailored to accelerate your path to market
+      {/* ============================================
+          HERO SECTION
+          ============================================ */}
+      <section 
+        className="bg-gradient-to-br from-[#0052CC] via-[#003BA3] to-[#001F3F] pt-28 sm:pt-32 md:pt-36 pb-16 sm:pb-20"
+        aria-labelledby="services-hero-heading"
+      >
+        <div 
+          ref={heroRef}
+          className="container mx-auto px-4 sm:px-6 lg:px-8 text-center fade-in-section" 
+          style={{ maxWidth: '900px' }}
+        >
+          <h1 
+            id="services-hero-heading"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6"
+          >
+            Comprehensive Regulatory Solutions
+          </h1>
+          <p className="text-lg sm:text-xl text-gray-200 mb-8 leading-relaxed">
+            Expert pharmaceutical consulting services tailored to accelerate your path 
+            to market and ensure compliance at every stage.
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              onClick={() => navigate('/contact')}
+              variant="accent"
+              size="xl"
+            >
+              Schedule Consultation
+              <ArrowRight className="ml-2" size={20} aria-hidden="true" />
+            </Button>
+            <Button
+              onClick={() => {
+                document.getElementById('services-grid')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              variant="outline"
+              size="xl"
+              className="border-white text-white hover:bg-white/10"
+            >
+              View All Services
+            </Button>
+          </div>
         </div>
       </section>
 
-      {/* Services Grid */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* ============================================
+          SERVICES GRID
+          ============================================ */}
+      <section 
+        id="services-grid" 
+        className="bg-[#F9FAFB] py-16 sm:py-20 md:py-24"
+        aria-labelledby="services-grid-heading"
+      >
+        <div 
+          className="container mx-auto px-4 sm:px-6 lg:px-8" 
+          style={{ maxWidth: '1200px' }}
+        >
+          <div ref={servicesRef} className="text-center mb-12 sm:mb-16 fade-in-section">
+            <h2 
+              id="services-grid-heading"
+              className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#001F3F] mb-3 sm:mb-4"
+            >
+              Our Services
+            </h2>
+            <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
+              From regulatory strategy to post-approval support, we provide end-to-end 
+              solutions for pharmaceutical companies worldwide.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 stagger-children">
             {services.map((service) => {
               const IconComponent = iconMap[service.icon] || MapPin;
               return (
-                <div
+                <ServiceCard
                   key={service.id}
-                  className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 border-2 border-gray-200 hover:border-neon-teal hover:shadow-2xl transition-all cursor-pointer"
-                  onClick={() => navigate(`/services/${service.id}`)}
-                >
-                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-neon-teal to-signal-green flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <IconComponent size={32} className="text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-midnight mb-4">{service.title}</h3>
-                  <p className="text-gray-600 mb-6">{service.description}</p>
-                  
-                  <div className="space-y-2 mb-6">
-                    {service.features.slice(0, 3).map((feature, idx) => (
-                      <div key={idx} className="flex items-center space-x-2">
-                        <CheckCircle2 size={16} className="text-signal-green flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
+                  id={service.id}
+                  icon={IconComponent}
+                  title={service.title}
+                  description={service.description}
+                  features={service.features}
+                  maxFeatures={3}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
-                  <Button variant="link" className="text-neon-teal p-0 group-hover:translate-x-2 transition-transform">
-                    Learn More <ArrowRight size={16} className="ml-1" />
-                  </Button>
+      {/* ============================================
+          PROCESS SECTION - How We Work
+          ============================================ */}
+      <section 
+        className="bg-white py-16 sm:py-20 md:py-24"
+        aria-labelledby="process-heading"
+      >
+        <div 
+          className="container mx-auto px-4 sm:px-6 lg:px-8" 
+          style={{ maxWidth: '1200px' }}
+        >
+          <div ref={processRef} className="text-center mb-12 sm:mb-16 fade-in-section">
+            <h2 
+              id="process-heading"
+              className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#001F3F] mb-3 sm:mb-4"
+            >
+              How We Work
+            </h2>
+            <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
+              A proven, collaborative process designed to deliver results efficiently
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            {processSteps.map((item, idx) => {
+              const IconComponent = item.icon;
+              return (
+                <div key={idx} className="relative">
+                  <article className="bg-white rounded-xl p-6 sm:p-8 shadow-md hover:shadow-xl transition-all h-full border border-gray-100">
+                    {/* Icon Container */}
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-[#E3F2FD] flex items-center justify-center mb-5 sm:mb-6">
+                      <IconComponent className="text-[#0052CC]" size={28} aria-hidden="true" />
+                    </div>
+                    
+                    {/* Step Number */}
+                    <div className="text-xs sm:text-sm font-bold text-[#0052CC] mb-2 tracking-wide">
+                      STEP {item.step}
+                    </div>
+                    
+                    {/* Title */}
+                    <h3 className="text-lg sm:text-xl font-bold text-[#001F3F] mb-3">
+                      {item.title}
+                    </h3>
+                    
+                    {/* Description */}
+                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </article>
+                  
+                  {/* Arrow between steps (desktop only) */}
+                  {idx < 3 && (
+                    <div 
+                      className="hidden lg:flex absolute top-1/2 -right-4 transform -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-md items-center justify-center"
+                      aria-hidden="true"
+                    >
+                      <ArrowRight size={16} className="text-[#0052CC]" />
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -82,52 +234,18 @@ const Services = () => {
         </div>
       </section>
 
-      {/* Process Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-midnight mb-4">How We Work</h2>
-            <p className="text-xl text-gray-600">A proven process that delivers results</p>
-          </div>
-
-          <div className="grid md:grid-cols-4 gap-6">
-            {[
-              { step: '01', title: 'Quick Intro Call', desc: 'No prep needed. Share your goals and challenges.', icon: '📞' },
-              { step: '02', title: 'Deep-Dive Diagnosis', desc: 'We analyze your situation and identify opportunities.', icon: '🔍' },
-              { step: '03', title: 'Strategy Roadmap', desc: 'Receive a clear, actionable plan with timelines.', icon: '🗺️' },
-              { step: '04', title: 'Ongoing Support', desc: 'We execute alongside you until approval.', icon: '🎯' }
-            ].map((item, idx) => (
-              <div key={idx} className="relative">
-                <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border-2 border-transparent hover:border-signal-green">
-                  <div className="text-6xl mb-4">{item.icon}</div>
-                  <div className="text-sm font-bold text-neon-teal mb-2">STEP {item.step}</div>
-                  <h3 className="text-xl font-bold text-midnight mb-2">{item.title}</h3>
-                  <p className="text-gray-600">{item.desc}</p>
-                </div>
-                {idx < 3 && (
-                  <div className="hidden md:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
-                    <ArrowRight size={24} className="text-signal-green" />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-midnight text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-          <p className="text-xl text-gray-300 mb-8">Schedule a free strategy call to discuss your regulatory needs.</p>
-          <Button 
-            onClick={() => navigate('/contact')} 
-            className="bg-signal-green hover:bg-signal-green/90 text-midnight font-bold px-8 py-6 text-lg rounded-full"
-          >
-            Schedule Your Strategy Call
-          </Button>
-        </div>
-      </section>
+      {/* ============================================
+          CTA SECTION
+          ============================================ */}
+      <CTASection
+        title="Ready to Get Started?"
+        subtitle="Schedule a free consultation to discuss your regulatory needs and discover how we can help accelerate your path to market."
+        cta={{
+          text: "Schedule Your Consultation",
+          onClick: () => navigate('/contact')
+        }}
+        variant="navy"
+      />
     </div>
   );
 };

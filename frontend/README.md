@@ -1,70 +1,120 @@
-# Getting Started with Create React App
+# Mevoq Frontend - Pfizer-Inspired Design System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, professional pharmaceutical consulting website built with React and Tailwind CSS.
 
-## Available Scripts
+## Design System
 
-In the project directory, you can run:
+This frontend implements a Pfizer-inspired design system optimized for enterprise pharmaceutical/healthcare consulting.
 
-### `npm start`
+### Color Palette
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+| Color | Hex | Usage |
+|-------|-----|-------|
+| Primary Blue | `#0052CC` | Primary CTAs, links, trust elements |
+| Primary Dark | `#003BA3` | Hover states |
+| Navy | `#001F3F` | Headings, dark backgrounds |
+| Accent (Teal) | `#1DD1A1` | Secondary CTAs, highlights |
+| Light Blue | `#E3F2FD` | Subtle backgrounds, badges |
+| Gray 50 | `#F9FAFB` | Section backgrounds |
+| Success | `#4CAF50` | Success states, checkmarks |
+| Error | `#F44336` | Error states |
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Typography
 
-### `npm test`
+- **Font Family**: Inter (with system fallbacks)
+- **H1**: 48px, Bold
+- **H2**: 36px, Semibold
+- **H3**: 24px, Semibold
+- **Body**: 16px, Regular
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Components
 
-### `npm run build`
+- `Button` - Primary, Accent, Outline, Ghost variants
+- `HeroSection` - Full-width hero with gradient option
+- `ServiceCard` - Service display with icon, features
+- `StatsDisplay` - Animated counter statistics
+- `TestimonialCard` - Client testimonials
+- `BlogCard` - Blog post previews
+- `CTASection` - Call-to-action sections
+- `ContactForm` - Contact form with validation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Project Structure
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+frontend/
+├── public/
+│   └── index.html          # SEO-optimized HTML template
+├── src/
+│   ├── components/         # Reusable UI components
+│   │   ├── ui/            # Base UI components (Button, etc.)
+│   │   ├── HeroSection.js
+│   │   ├── ServiceCard.js
+│   │   ├── StatsDisplay.js
+│   │   ├── TestimonialCard.js
+│   │   ├── BlogCard.js
+│   │   ├── CTASection.js
+│   │   ├── ContactForm.js
+│   │   └── Layout.js
+│   ├── pages/             # Page components
+│   │   ├── Home.js
+│   │   ├── About.js
+│   │   ├── Services.js
+│   │   ├── Blog.js
+│   │   ├── BlogPost.js
+│   │   ├── Contact.js
+│   │   └── Admin.js
+│   ├── hooks/             # Custom React hooks
+│   │   └── useScrollAnimation.js
+│   ├── lib/               # Utilities and API
+│   │   ├── api.js
+│   │   ├── supabase.js
+│   │   └── utils.js
+│   ├── styles/            # CSS modules
+│   │   ├── design-tokens.css
+│   │   ├── base.css
+│   │   ├── utilities.css
+│   │   ├── animations.css
+│   │   └── index.css
+│   ├── App.js
+│   ├── App.css
+│   └── index.js
+└── tailwind.config.js
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Getting Started
 
-### `npm run eject`
+```bash
+# Install dependencies
+npm install
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Start development server
+npm start
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Build for production
+npm run build
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## SEO Features
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- Semantic HTML structure
+- Open Graph meta tags
+- Twitter Card meta tags
+- Structured data (JSON-LD)
+- Canonical URLs
+- Accessible navigation
 
-## Learn More
+## Accessibility
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- WCAG 2.1 AA compliant
+- Keyboard navigation
+- Screen reader support
+- Focus visible states
+- Reduced motion support
+- Minimum 44x44px touch targets
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Browser Support
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
